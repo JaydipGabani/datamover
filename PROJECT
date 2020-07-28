@@ -1,0 +1,11 @@
+domain: k8s.io
+multigroup: true
+repo: datamover
+resources:
+- group: apps
+  kind: Deployment
+  version: v1
+- group: stable.example.com
+  kind: CronTab
+  version: v1
+version: "2"

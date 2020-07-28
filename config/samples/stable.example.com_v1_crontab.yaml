@@ -1,0 +1,7 @@
+apiVersion: stable.example.com.k8s.io/v1
+kind: CronTab
+metadata:
+  name: crontab-sample
+spec:
+  # Add fields here
+  foo: bar
