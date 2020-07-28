@@ -18,6 +18,8 @@ package controllers
 
 import (
 	"context"
+	"github.com/kubernetes-csi/external-snapshotter/v2/pkg/apis/volumesnapshot/v1beta1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -42,12 +44,21 @@ func (r *CronTabReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	_ = r.Log.WithValues("crontab", req.NamespacedName)
 
 	// your logic here
-
+	tab := &stableexamplecomv1.CronTab{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "snp-pvc",
+			Namespace: "nginx-example",
+		},
+		Spec: stableexamplecomv1.CronTabSpec{
+			Foo: "example",
+		},
+	}
+	r.Create(context.TODO(), tab)
 	return ctrl.Result{}, nil
 }
 
 func (r *CronTabReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&stableexamplecomv1.CronTab{}).
+		For(&v1beta1.VolumeSnapshot{}).
 		Complete(r)
 }

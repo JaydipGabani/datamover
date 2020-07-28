@@ -18,12 +18,10 @@ package controllers
 
 import (
 	"context"
-	dm "datamover/apis/apps/v1"
 	ct "datamover/apis/stable.example.com/v1"
 	"flag"
 	"fmt"
 	"github.com/go-logr/logr"
-	"github.com/kubernetes-csi/external-snapshotter/v2/pkg/apis/volumesnapshot/v1beta1"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -32,8 +30,6 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/handler"
-	"sigs.k8s.io/controller-runtime/pkg/source"
 )
 
 // DeploymentReconciler reconciles a Deployment object
@@ -71,20 +67,10 @@ func (r *DeploymentReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) 
 		},
 	}
 
-	tab := &ct.CronTab{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "snp-pvc",
-			Namespace: "nginx-example",
-		},
-		Spec: ct.CronTabSpec{
-			Foo: "example",
-		},
-	}
 	kubeconfig := "/home/jgabani/Downloads/jgabani0518/ocp4-workshop_jgabani0518_kubeconfig"
 	flag.Parse()
 	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
 	if err != nil {
-		print(tab)
 		panic(err.Error())
 	}
 	// creates the clientset
@@ -99,7 +85,6 @@ func (r *DeploymentReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) 
 
 func (r *DeploymentReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&dm.Deployment{}).
-		Watches(&source.Kind{Type: &v1beta1.VolumeSnapshot{}}, &handler.EnqueueRequestForObject{}).
+		For(&ct.CronTab{}).
 		Complete(r)
 }
